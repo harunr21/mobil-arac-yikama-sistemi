@@ -26,3 +26,25 @@
 @media(max-width:760px){.sidebar{position:sticky;top:0;width:auto;height:auto;padding:12px 14px}.brand{padding:0}.brand small,.sidebarFooter{display:none}.brandMark{width:35px;height:35px;border-radius:10px}.nav{overflow-x:auto;flex-direction:row;margin-top:10px;border:0;padding:0 0 2px}.nav button{display:flex;width:auto;flex:0 0 auto;padding:8px 10px}.nav button span{display:none}.main{margin:0;padding:22px 14px 90px}.topbar{align-items:flex-start}.topbar h1{font-size:24px}.topbarActions a{display:none}.metrics{grid-template-columns:repeat(2,1fr);gap:9px}.metric{padding:14px}.panel{padding:16px}.panelHeader{align-items:flex-start;flex-direction:column}.bookingCard{grid-template-columns:1fr}.bookingTime{align-items:baseline;justify-content:flex-start;flex-direction:row;gap:8px;border:0;border-bottom:1px solid #e5ebf0;padding:9px 13px}.bookingTime strong{font-size:17px}.bookingFacts{grid-template-columns:1fr 1fr}.cardGrid{grid-template-columns:1fr}.compactList form{grid-template-columns:1fr 1fr}.compactList form strong{grid-column:1/-1}.ruleList form{grid-template-columns:1fr 1fr}.ruleList form>strong{grid-column:1/-1}.areaGrid{grid-template-columns:1fr 1fr}.inlineForm{align-items:stretch;flex-direction:column}.inlineForm>div{min-width:0}.uploadForm{grid-template-columns:1fr}.uploadFields{grid-template-columns:1fr}.fullField{grid-column:auto}.reviewForm,.settingsForm{grid-template-columns:1fr}.reviewForm .consent,.formFoot{grid-column:auto}.reviewList{grid-template-columns:1fr}.accessActions{flex-direction:column}}
 @media(max-width:430px){.metrics{grid-template-columns:1fr 1fr}.metric strong{font-size:24px}.areaGrid{grid-template-columns:1fr}.bookingFacts{grid-template-columns:1fr}.topbarActions{display:none}}
 @media(prefers-reduced-motion:reduce){.nav button,.loading span{animation:none;transition:none}}
+
+/* Keep the management experience on the same Poppins hierarchy as the public site. */
+.shell { font-family:var(--font-poppins),"Helvetica Neue",sans-serif; font-size:14px; font-weight:400; line-height:1.43; }
+.brandMark { font-weight:700; letter-spacing:normal; }
+.brand strong { font-weight:700; }.brand small { font-weight:500; letter-spacing:normal; }
+.nav button { font-size:14px; font-weight:500; line-height:20px; }
+.avatar,.sidebarFooter strong { font-weight:600; }
+.eyebrow { font-weight:600; letter-spacing:normal; }
+.topbar h1 { font-size:30px; font-weight:700; line-height:37.5px; letter-spacing:normal; }
+.topbarActions a,.topbarActions button { font-size:14px; font-weight:500; }
+.metric strong { font-weight:700; }
+.panelHeader h2 { font-size:24px; font-weight:700; line-height:34.32px; letter-spacing:normal; }
+.panelHeader p { font-size:14px; font-weight:400; line-height:20px; }
+.panel button { font-size:14px; font-weight:500; line-height:20px; }
+.panel input,.panel select,.panel textarea,.inlineField select { font-size:14px; font-weight:400; line-height:20px; }
+.status { font-weight:600; }
+.bookingFacts b { font-weight:600; letter-spacing:normal; }
+.areaToggle span { font-weight:600; }
+.accessCard h1 { font-size:30px; font-weight:700; line-height:37.5px; letter-spacing:normal; }
+.primaryButton,.secondaryButton { font-size:14px; font-weight:500; line-height:20px; }
+
+@media(max-width:760px){.topbar h1{font-size:24px;line-height:34.32px}.panelHeader h2{font-size:21px;line-height:31.5px}}

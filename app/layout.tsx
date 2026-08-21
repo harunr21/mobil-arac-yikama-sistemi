@@ -1,9 +1,14 @@
 import type { Metadata } from 'next';
-import { Manrope } from 'next/font/google';
+import { Poppins } from 'next/font/google';
 import './globals.css';
 import { SiteChrome } from './components/site-chrome';
 
-const manrope = Manrope({ variable: '--font-manrope', subsets: ['latin', 'latin-ext'] });
+const poppins = Poppins({
+  variable: '--font-poppins',
+  subsets: ['latin', 'latin-ext'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
@@ -20,5 +25,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="tr"><body className={manrope.variable}><SiteChrome>{children}</SiteChrome></body></html>;
+  return <html lang="tr"><body className={poppins.variable}><SiteChrome>{children}</SiteChrome></body></html>;
 }

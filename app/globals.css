@@ -15,7 +15,7 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { margin: 0; color: var(--ink); background: #fff; font-family: var(--font-manrope), Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+body { margin: 0; color: var(--ink); background: #fff; font-family: var(--font-poppins), "Helvetica Neue", sans-serif; font-size: 14px; font-weight: 400; line-height: 1.43; -webkit-font-smoothing: antialiased; }
 a { color: inherit; text-decoration: none; }
 button, input, select, textarea { color: inherit; font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
@@ -253,3 +253,101 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 @media (hover: none) { .package-card:hover, .quality-grid article:hover, .extras-grid article:hover, .choice-grid > button:hover { transform: none; box-shadow: none; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; } }
+
+/* Reference typography: Poppins scale and hierarchy used throughout GoWashMyCar. */
+h1, h2, h3, h4, h5, h6, strong, b { font-weight: 700; }
+
+.brand-mark { font-weight: 700; letter-spacing: normal; }
+.brand-kicker { font-weight: 600; letter-spacing: .08em; }
+.brand-name { font-weight: 700; letter-spacing: normal; }
+.desktop-nav { font-size: 14px; font-weight: 500; line-height: 14px; }
+.mobile-nav > a:not(.whatsapp-button) { font-size: 14px; font-weight: 500; }
+.whatsapp-button { font-size: 14px; font-weight: 600; letter-spacing: normal; }
+.primary-button { font-size: 14px; font-weight: 500; line-height: 24.5px; letter-spacing: normal; }
+
+.eyebrow { font-weight: 600; letter-spacing: normal; }
+.hero h1 { font-size: 60px; font-weight: 700; line-height: 50px; letter-spacing: normal; }
+.hero-lead { font-size: 22px; font-weight: 400; line-height: 28px; }
+.area-checker label { font-size: 12px; font-weight: 600; line-height: 12px; }
+.area-form button { font-size: 20px; font-weight: 700; line-height: 20px; letter-spacing: normal; }
+.trust-row span { font-weight: 500; }
+
+.quick-steps strong { font-size: 12px; font-weight: 600; letter-spacing: normal; }
+.quick-steps span { font-size: 17px; font-weight: 400; line-height: 25.5px; }
+.quick-steps b { font-size: 24px; font-weight: 600; line-height: 24px; }
+
+.section-heading h2,
+.quality-copy h2,
+.final-cta h2,
+.district-band h2,
+.extras-section h2,
+.slim-cta h2 { font-size: 36px; font-weight: 700; line-height: 51.48px; letter-spacing: normal; }
+.section-heading > p:last-child { font-weight: 400; }
+
+.popular-label, .package-number { font-weight: 700; }
+.package-number { letter-spacing: normal; }
+.package-card h3 { font-size: 18px; font-weight: 700; line-height: 25.74px; letter-spacing: normal; }
+.package-card > p { font-size: 12px; font-weight: 400; line-height: 14.4px; }
+.package-card li { font-weight: 400; }
+.package-card li span { font-weight: 700; }
+.card-cta { font-size: 14px; font-weight: 500; line-height: 24.5px; letter-spacing: normal; }
+
+.review-track blockquote { font-weight: 400; letter-spacing: normal; }
+.review-track strong { font-weight: 600; }
+.outline-button, .text-link { font-size: 14px; font-weight: 500; line-height: 24.5px; letter-spacing: normal; }
+.quality-grid span, .extras-grid span { font-weight: 600; }
+.quality-grid h3 { font-size: 18px; font-weight: 700; line-height: 25.74px; }
+.quality-grid p, .extras-grid p { font-weight: 400; }
+
+.page-hero h1 { font-size: 36px; font-weight: 700; line-height: 51.48px; letter-spacing: normal; }
+.page-hero > div:first-child > p:not(.eyebrow) { font-size: 20px; font-weight: 400; line-height: 28.6px; }
+.inline-area-checker button { font-size: 14px; font-weight: 500; line-height: 24.5px; }
+.service-area-form h2 { font-size: 24px; font-weight: 700; line-height: 34.32px; letter-spacing: normal; }
+.extras-grid h3 { font-size: 24px; font-weight: 700; line-height: 34.32px; }
+.extras-grid strong { font-weight: 600; }
+
+.faq-hero h1 { font-size: 30px; font-weight: 700; line-height: 37.5px; letter-spacing: normal; }
+.faq-list article > span { font-weight: 600; }
+.faq-list h2 { font-size: 21px; font-weight: 700; line-height: 31.5px; letter-spacing: normal; }
+.faq-list p { font-size: 16px; font-weight: 400; line-height: 24px; }
+.faq-contact h2 { font-size: 30px; font-weight: 700; line-height: 37.5px; letter-spacing: normal; }
+
+.booking-aside h1 { font-size: 36px; font-weight: 700; line-height: 51.48px; letter-spacing: normal; }
+.booking-aside li { font-weight: 500; }
+.booking-panel > header { font-weight: 500; letter-spacing: normal; }
+.wizard-section h2 { font-size: 36px; font-weight: 700; line-height: 51.48px; letter-spacing: normal; }
+.wizard-section > p { font-weight: 400; }
+.choice-grid em, .extra-choice-grid em { font-weight: 600; }
+.form-grid label, .slot-field legend { font-size: 12px; font-weight: 600; line-height: 12px; }
+.slot-grid button { font-size: 14px; font-weight: 500; }
+.review-step dt, .manage-card dt { font-weight: 600; }
+.back-button { font-size: 14px; font-weight: 500; }
+.booking-success h2, .manage-card h1 { font-size: 36px; font-weight: 700; line-height: 51.48px; letter-spacing: normal; }
+.status-pill, .danger-button { font-weight: 600; }
+
+.legal-page h1 { font-size: 36px; font-weight: 700; line-height: 51.48px; letter-spacing: normal; }
+.legal-page h2 { font-size: 21px; font-weight: 700; line-height: 31.5px; }
+.legal-page article > p { font-size: 16px; font-weight: 400; line-height: 24px; }
+.site-footer h2 { font-weight: 600; letter-spacing: normal; }
+.floating-whatsapp { font-size: 14px; font-weight: 600; }
+.booking-mobile-summary button { font-size: 14px; font-weight: 500; }
+
+@media (max-width: 560px) {
+  .hero h1 { font-size: 40px; line-height: 50px; letter-spacing: normal; }
+  .hero-lead { font-size: 18px; line-height: 28px; }
+  .area-form button { font-size: 18px; line-height: 18px; }
+  .section-heading h2,
+  .quality-copy h2,
+  .final-cta h2,
+  .district-band h2,
+  .extras-section h2,
+  .slim-cta h2 { font-size: 24px; font-weight: 600; line-height: 34.32px; }
+  .page-hero h1 { font-size: 32px; line-height: 45.76px; }
+  .page-hero > div:first-child > p:not(.eyebrow) { font-size: 18px; line-height: 28px; }
+  .faq-hero h1 { font-size: 24px; line-height: 34.32px; }
+  .faq-list h2 { font-size: 21px; line-height: 31.5px; }
+  .faq-list p { font-size: 16px; line-height: 24px; }
+  .booking-aside h1 { font-size: 32px; line-height: 45.76px; }
+  .wizard-section h2 { font-size: 32px; line-height: 45.76px; }
+  .booking-success h2, .manage-card h1, .legal-page h1 { font-size: 32px; line-height: 45.76px; }
+}
