@@ -48,3 +48,16 @@
 .primaryButton,.secondaryButton { font-size:14px; font-weight:500; line-height:20px; }
 
 @media(max-width:760px){.topbar h1{font-size:24px;line-height:34.32px}.panelHeader h2{font-size:21px;line-height:31.5px}}
+
+.sidebarFooter button { border:0; padding:0; background:none; color:#8295aa; font:inherit; cursor:pointer; }
+.settingsStack { display:grid; gap:18px; }
+.loginCard { width:min(460px,100%); }
+.loginCard .accessIcon { background:linear-gradient(135deg,#11b8c9,#58cf89); color:#08203a; font-size:18px; font-weight:800; }
+.loginForm { display:grid; gap:14px; margin-top:24px; text-align:left; }
+.loginForm label { display:grid; gap:6px; color:#44566b; font-size:13px; font-weight:600; }
+.loginForm input { width:100%; border:1px solid #ced9e2; border-radius:10px; padding:12px 13px; background:#fbfcfd; color:#0b1d36; font:inherit; outline:none; }
+.loginForm input:focus { border-color:#11adbc; box-shadow:0 0 0 3px rgba(17,173,188,.13); }
+.loginForm button { border:0; border-radius:10px; padding:13px 16px; background:#0b2846; color:#fff; font:inherit; font-weight:700; cursor:pointer; }
+.loginForm button:disabled { cursor:wait; opacity:.65; }
+.loginForm>a { color:#617389; font-size:12px; text-align:center; text-decoration:none; }
+.loginError { margin:0!important; border-radius:8px; padding:10px 12px; background:#fff0f0!important; color:#963838!important; font-size:12px; line-height:1.45!important; }

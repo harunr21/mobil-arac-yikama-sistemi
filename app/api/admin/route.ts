@@ -1,5 +1,5 @@
 import { ensureDatabase, getRawD1 } from '@/app/lib/db';
-import { AdminAccessError, requireAdmin } from '@/app/admin/auth';
+import { AdminAccessError, requireAdmin, updateAdminCredentials } from '@/app/admin/auth';
 import { sendBookingStatusEmail } from '@/app/admin/notifications';
 import { getAdminSnapshot } from '@/app/admin/store';
 import type { BookingStatus } from '@/app/admin/types';
@@ -10,25 +10,25 @@ class InputError extends Error {}
 
 export async function GET() {
   try {
-    await requireAdmin('/admin');
+    await requireAdmin();
     return Response.json(await getAdminSnapshot(), { headers: { 'cache-control': 'no-store' } });
   } catch (error) {
-    if (error instanceof AdminAccessError) return Response.json({ error: error.message }, { status: 403 });
+    if (error instanceof AdminAccessError) return Response.json({ error: error.message }, { status: 401 });
     throw error;
   }
 }
 
 export async function POST(request: Request) {
   try {
-    await requireAdmin('/admin');
+    await requireAdmin();
     assertSameOrigin(request);
     const body = await request.json() as Record<string, unknown>;
     if (typeof body.action !== 'string') throw new InputError('Geçersiz yönetim işlemi.');
     await ensureDatabase();
-    await executeAction(body.action, body);
-    return Response.json({ ok: true });
+    const result = await executeAction(body.action, body);
+    return Response.json(result ? { ok: true, ...result } : { ok: true });
   } catch (error) {
-    if (error instanceof AdminAccessError) return Response.json({ error: error.message }, { status: 403 });
+    if (error instanceof AdminAccessError) return Response.json({ error: error.message }, { status: 401 });
     if (error instanceof InputError || error instanceof SyntaxError) return Response.json({ error: error.message }, { status: 400 });
     console.error('Admin mutation failed', error);
     return Response.json({ error: 'Değişiklik kaydedilemedi. Lütfen tekrar deneyin.' }, { status: 500 });
@@ -37,6 +37,18 @@ export async function POST(request: Request) {
 
 async function executeAction(action: string, body: Record<string, unknown>) {
   const db = getRawD1();
+  if (action === 'update_credentials') {
+    const username = stringValue(body.username, 'Geçerli bir kullanıcı adı yazın.', 40);
+    if (!/^[A-Za-z0-9._-]{3,40}$/.test(username)) throw new InputError('Kullanıcı adı 3–40 karakter olmalı; yalnızca harf, rakam, nokta, tire ve alt çizgi içerebilir.');
+    const currentPassword = passwordValue(body.currentPassword, 'Mevcut şifre gerekli.');
+    const newPassword = passwordValue(body.newPassword, 'Yeni şifre en az 8 karakter olmalı.');
+    const confirmation = passwordValue(body.newPasswordConfirm, 'Yeni şifre tekrarı gerekli.');
+    if (newPassword.length < 8) throw new InputError('Yeni şifre en az 8 karakter olmalı.');
+    if (newPassword !== confirmation) throw new InputError('Yeni şifreler eşleşmiyor.');
+    await updateAdminCredentials(currentPassword, username, newPassword);
+    return { reauthenticate: true };
+  }
+
   if (action === 'update_booking_status') {
     const id = stringValue(body.id, 'Randevu bulunamadı.', 100);
     const status = stringValue(body.status, 'Geçersiz randevu durumu.', 20) as BookingStatus;
@@ -160,6 +172,7 @@ function assertSameOrigin(request: Request) {
   if (origin && origin !== new URL(request.url).origin) throw new InputError('İstek kaynağı doğrulanamadı.');
 }
 function stringValue(value: unknown, message: string, max: number) { if (typeof value !== 'string' || !value.trim() || value.trim().length > max) throw new InputError(message); return value.trim(); }
+function passwordValue(value: unknown, message: string) { if (typeof value !== 'string' || !value || value.length > 128) throw new InputError(message); return value; }
 function boolInt(value: unknown) { return value === true ? 1 : 0; }
 function integerValue(value: unknown, min: number, max: number, message: string) { const parsed = Number(value); if (!Number.isInteger(parsed) || parsed < min || parsed > max) throw new InputError(message); return parsed; }
 function moneyValue(value: unknown): number | null { if (value === '' || value === null || value === undefined) return null; const parsed = Number(value); if (!Number.isFinite(parsed) || parsed < 0 || parsed > 1_000_000) throw new InputError('Geçerli bir fiyat girin.'); return Math.round(parsed * 100); }

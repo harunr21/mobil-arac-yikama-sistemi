@@ -117,6 +117,18 @@ const tableStatements = [
     sort_order INTEGER DEFAULT 0 NOT NULL, created_at TEXT NOT NULL
   )`,
   `CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL)`,
+  `CREATE TABLE IF NOT EXISTS admin_credentials (
+    id TEXT PRIMARY KEY NOT NULL, username TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL, updated_at TEXT NOT NULL
+  )`,
+  `CREATE TABLE IF NOT EXISTS admin_sessions (
+    token_hash TEXT PRIMARY KEY NOT NULL, username TEXT NOT NULL,
+    created_at TEXT NOT NULL, expires_at TEXT NOT NULL
+  )`,
+  `CREATE TABLE IF NOT EXISTS admin_login_attempts (
+    key_hash TEXT PRIMARY KEY NOT NULL, attempt_count INTEGER DEFAULT 0 NOT NULL,
+    window_started_at TEXT NOT NULL, blocked_until TEXT
+  )`,
   `CREATE TABLE IF NOT EXISTS analytics_daily (
     date TEXT NOT NULL, event TEXT NOT NULL, route TEXT NOT NULL, count INTEGER DEFAULT 0 NOT NULL
   )`,
@@ -142,6 +154,7 @@ const indexStatements = [
   'CREATE INDEX IF NOT EXISTS idx_gallery_items_published_date ON gallery_items(published, completed_at)',
   'CREATE INDEX IF NOT EXISTS idx_gallery_images_item_sort ON gallery_images(gallery_item_id, sort_order)',
   'CREATE INDEX IF NOT EXISTS idx_reviews_published_sort ON reviews(published, sort_order)',
+  'CREATE INDEX IF NOT EXISTS idx_admin_sessions_expires ON admin_sessions(expires_at)',
   'CREATE UNIQUE INDEX IF NOT EXISTS idx_analytics_daily_key ON analytics_daily(date, event, route)',
 ] as const;
 

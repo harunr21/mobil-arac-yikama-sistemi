@@ -45,7 +45,7 @@ function formatDate(value: string) {
   return new Intl.DateTimeFormat('tr-TR', { dateStyle: 'medium' }).format(new Date(`${value}T12:00:00`));
 }
 
-export function AdminDashboard({ adminName, adminEmail }: { adminName: string; adminEmail: string }) {
+export function AdminDashboard({ adminName }: { adminName: string }) {
   const [activeTab, setActiveTab] = useState<Tab>('randevular');
   const [data, setData] = useState<AdminSnapshot>(emptySnapshot);
   const [loading, setLoading] = useState(true);
@@ -57,7 +57,11 @@ export function AdminDashboard({ adminName, adminEmail }: { adminName: string; a
     setLoading(true);
     try {
       const response = await fetch('/api/admin', { cache: 'no-store' });
-      if (!response.ok) throw new Error(response.status === 403 ? 'Bu işlem için yetkiniz yok.' : 'Yönetim verileri alınamadı.');
+      if (response.status === 401) {
+        window.location.assign('/admin/login');
+        return;
+      }
+      if (!response.ok) throw new Error('Yönetim verileri alınamadı.');
       setData(await response.json() as AdminSnapshot);
     } catch (error) {
       setNotice({ kind: 'error', text: error instanceof Error ? error.message : 'Bir hata oluştu.' });
@@ -80,14 +84,27 @@ export function AdminDashboard({ adminName, adminEmail }: { adminName: string; a
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ action, ...payload }),
       });
-      const result = await response.json().catch(() => ({})) as { error?: string };
+      const result = await response.json().catch(() => ({})) as { error?: string; reauthenticate?: boolean };
       if (!response.ok) throw new Error(result.error || 'Değişiklik kaydedilemedi.');
+      if (result.reauthenticate) {
+        window.location.assign('/admin/login?changed=1');
+        return;
+      }
       setNotice({ kind: 'ok', text: label });
       await load();
     } catch (error) {
       setNotice({ kind: 'error', text: error instanceof Error ? error.message : 'Bir hata oluştu.' });
     } finally {
       setBusy(null);
+    }
+  }
+
+  async function logout() {
+    setBusy('logout');
+    try {
+      await fetch('/api/admin/session', { method: 'DELETE' });
+    } finally {
+      window.location.assign('/admin/login');
     }
   }
 
@@ -117,8 +134,8 @@ export function AdminDashboard({ adminName, adminEmail }: { adminName: string; a
         </nav>
         <div className={styles.sidebarFooter}>
           <span className={styles.avatar}>{adminName.slice(0, 1).toLocaleUpperCase('tr-TR')}</span>
-          <span><strong>{adminName}</strong><small>{adminEmail}</small></span>
-          <a href="/signout-with-chatgpt?return_to=%2F" aria-label="Çıkış yap">↗</a>
+          <span><strong>{adminName}</strong><small>Yönetici hesabı</small></span>
+          <button type="button" onClick={() => void logout()} aria-label="Çıkış yap">↗</button>
         </div>
       </aside>
 
@@ -189,7 +206,7 @@ export function AdminDashboard({ adminName, adminEmail }: { adminName: string; a
           </section>
         )}
 
-        {activeTab === 'ayarlar' && <SettingsForm settings={data.settings} disabled={busy !== null} onSubmit={(payload) => void mutate('save_settings', payload)} />}
+        {activeTab === 'ayarlar' && <SettingsForm settings={data.settings} username={adminName} disabled={busy !== null} onSubmit={(payload) => void mutate('save_settings', payload)} onCredentials={(payload) => void mutate('update_credentials', payload, 'Giriş bilgileri güncellendi.')} />}
       </main>
     </div>
   );
@@ -250,9 +267,10 @@ function ReviewForm({ disabled, onSubmit }: { disabled: boolean; onSubmit: (payl
   return <form className={styles.reviewForm} onSubmit={submit}><label>Müşteri adı<input name="customerName" required maxLength={60} placeholder="Yayın izni alınmış ad" /></label><label>Puan<select name="rating" defaultValue="5"><option value="5">5 yıldız</option><option value="4">4 yıldız</option><option value="3">3 yıldız</option><option value="2">2 yıldız</option><option value="1">1 yıldız</option></select></label><label className={styles.fullField}>Yorum<textarea name="quote" required maxLength={420} rows={3} /></label><label className={styles.consent}><input type="checkbox" required /> Bu yorumun yayın izninin alındığını onaylıyorum.</label><button type="submit" disabled={disabled}>Taslak olarak ekle</button></form>;
 }
 
-function SettingsForm({ settings, disabled, onSubmit }: { settings: Record<string, string>; disabled: boolean; onSubmit: (payload: Record<string, unknown>) => void }) {
+function SettingsForm({ settings, username, disabled, onSubmit, onCredentials }: { settings: Record<string, string>; username: string; disabled: boolean; onSubmit: (payload: Record<string, unknown>) => void; onCredentials: (payload: Record<string, unknown>) => void }) {
   function submit(event: FormEvent<HTMLFormElement>) { event.preventDefault(); onSubmit({ settings: Object.fromEntries(new FormData(event.currentTarget)) }); }
-  return <section className={styles.panel}><div className={styles.panelHeader}><div><h2>İşletme bilgileri</h2><p>Sitede ve müşteri bildirimlerinde gösterilen iletişim bilgileri.</p></div></div><form className={styles.settingsForm} onSubmit={submit}><label>İşletme adı<input name="business_name" defaultValue={settings.business_name || 'Ankara Mobil Oto Yıkama'} required /></label><label>Telefon<input name="phone" type="tel" defaultValue={settings.phone || ''} placeholder="+90 5xx xxx xx xx" /></label><label>WhatsApp numarası<input name="whatsapp_number" inputMode="numeric" defaultValue={settings.whatsapp_number || ''} placeholder="905xxxxxxxxx" /></label><label>E-posta<input name="contact_email" type="email" defaultValue={settings.contact_email || ''} /></label><label>İptal/değişiklik sınırı (saat)<input name="booking_change_cutoff_hours" type="number" min="1" max="48" defaultValue={settings.booking_change_cutoff_hours || '2'} /></label><label className={styles.fullField}>Kısa işletme notu<textarea name="business_note" rows={3} maxLength={300} defaultValue={settings.business_note || ''} /></label><div className={styles.formFoot}><p>Ödeme yöntemi: <strong>Hizmet sonrası yüz yüze</strong></p><button type="submit" disabled={disabled}>Ayarları kaydet</button></div></form></section>;
+  function submitCredentials(event: FormEvent<HTMLFormElement>) { event.preventDefault(); const form = new FormData(event.currentTarget); onCredentials(Object.fromEntries(form)); }
+  return <div className={styles.settingsStack}><section className={styles.panel}><div className={styles.panelHeader}><div><h2>İşletme bilgileri</h2><p>Sitede ve müşteri bildirimlerinde gösterilen iletişim bilgileri.</p></div></div><form className={styles.settingsForm} onSubmit={submit}><label>İşletme adı<input name="business_name" defaultValue={settings.business_name || 'Ankara Mobil Oto Yıkama'} required /></label><label>Telefon<input name="phone" type="tel" defaultValue={settings.phone || ''} placeholder="+90 5xx xxx xx xx" /></label><label>WhatsApp numarası<input name="whatsapp_number" inputMode="numeric" defaultValue={settings.whatsapp_number || ''} placeholder="905xxxxxxxxx" /></label><label>E-posta<input name="contact_email" type="email" defaultValue={settings.contact_email || ''} /></label><label>İptal/değişiklik sınırı (saat)<input name="booking_change_cutoff_hours" type="number" min="1" max="48" defaultValue={settings.booking_change_cutoff_hours || '2'} /></label><label className={styles.fullField}>Kısa işletme notu<textarea name="business_note" rows={3} maxLength={300} defaultValue={settings.business_note || ''} /></label><div className={styles.formFoot}><p>Ödeme yöntemi: <strong>Hizmet sonrası yüz yüze</strong></p><button type="submit" disabled={disabled}>Ayarları kaydet</button></div></form></section><section className={styles.panel}><div className={styles.panelHeader}><div><h2>Giriş bilgileri</h2><p>Kullanıcı adı veya şifre değiştiğinde tüm açık oturumlar kapatılır.</p></div></div><form className={styles.settingsForm} onSubmit={submitCredentials}><label>Yeni kullanıcı adı<input name="username" defaultValue={username} minLength={3} maxLength={40} pattern="[A-Za-z0-9._-]+" required autoComplete="username" /></label><label>Mevcut şifre<input name="currentPassword" type="password" minLength={8} maxLength={128} required autoComplete="current-password" /></label><label>Yeni şifre<input name="newPassword" type="password" minLength={8} maxLength={128} required autoComplete="new-password" /></label><label>Yeni şifre tekrar<input name="newPasswordConfirm" type="password" minLength={8} maxLength={128} required autoComplete="new-password" /></label><div className={styles.formFoot}><p>En az 8 karakterli, tahmin edilmesi zor bir şifre kullanın.</p><button type="submit" disabled={disabled}>Giriş bilgilerini değiştir</button></div></form></section></div>;
 }
 
 function EmptyState({ title, text }: { title: string; text: string }) { return <div className={styles.empty}><span aria-hidden="true">○</span><strong>{title}</strong><p>{text}</p></div>; }

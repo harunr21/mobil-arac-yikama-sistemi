@@ -200,6 +200,31 @@ export const settings = sqliteTable('settings', {
   value: text('value').notNull(),
 });
 
+export const adminCredentials = sqliteTable('admin_credentials', {
+  id: text('id').primaryKey(),
+  username: text('username').notNull().unique(),
+  passwordHash: text('password_hash').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
+export const adminSessions = sqliteTable(
+  'admin_sessions',
+  {
+    tokenHash: text('token_hash').primaryKey(),
+    username: text('username').notNull(),
+    createdAt: text('created_at').notNull(),
+    expiresAt: text('expires_at').notNull(),
+  },
+  (table) => [index('idx_admin_sessions_expires').on(table.expiresAt)],
+);
+
+export const adminLoginAttempts = sqliteTable('admin_login_attempts', {
+  keyHash: text('key_hash').primaryKey(),
+  attemptCount: integer('attempt_count').notNull().default(0),
+  windowStartedAt: text('window_started_at').notNull(),
+  blockedUntil: text('blocked_until'),
+});
+
 export const analyticsDaily = sqliteTable(
   'analytics_daily',
   {

@@ -12,7 +12,7 @@ const maxBytes = 8 * 1024 * 1024;
 export async function POST(request: Request) {
   let uploadedKey: string | null = null;
   try {
-    await requireAdmin('/admin');
+    await requireAdmin();
     const origin = request.headers.get('origin');
     if (origin && origin !== new URL(request.url).origin) return Response.json({ error: 'İstek kaynağı doğrulanamadı.' }, { status: 400 });
     const contentLength = Number(request.headers.get('content-length') || 0);
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
     ]);
     return Response.json({ ok: true, id: itemId });
   } catch (error) {
-    if (error instanceof AdminAccessError) return Response.json({ error: error.message }, { status: 403 });
+    if (error instanceof AdminAccessError) return Response.json({ error: error.message }, { status: 401 });
     if (uploadedKey) {
       const runtime = env as unknown as { FILES?: R2Bucket };
       await runtime.FILES?.delete(uploadedKey).catch(() => undefined);
