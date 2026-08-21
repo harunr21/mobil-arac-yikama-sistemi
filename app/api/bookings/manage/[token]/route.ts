@@ -27,6 +27,16 @@ export async function GET(_request: Request, { params }: RouteContext) {
 
 export async function PATCH(request: Request, { params }: RouteContext) {
   const { token } = await params;
+  if (!/^[A-Za-z0-9_-]{43}$/.test(token)) {
+    return NextResponse.json({ error: 'Randevu bağlantısı geçersiz veya süresi dolmuş.' }, { status: 404 });
+  }
+  const contentLength = Number(request.headers.get('content-length') ?? 0);
+  if (!Number.isFinite(contentLength) || contentLength > 4_096) {
+    return NextResponse.json({ error: 'İstek verisi çok büyük.' }, { status: 413 });
+  }
+  const row = await findBookingByToken(token);
+  if (!row) return NextResponse.json({ error: 'Randevu bağlantısı geçersiz veya süresi dolmuş.' }, { status: 404 });
+
   let body: unknown;
   try {
     body = await request.json();
@@ -37,8 +47,6 @@ export async function PATCH(request: Request, { params }: RouteContext) {
     return NextResponse.json({ error: 'Geçerli bir işlem gönderin.' }, { status: 400 });
   }
 
-  const row = await findBookingByToken(token);
-  if (!row) return NextResponse.json({ error: 'Randevu bağlantısı geçersiz veya süresi dolmuş.' }, { status: 404 });
   const cutoff = await getCutoff(row);
   if (!cutoff.canChange) {
     return NextResponse.json({ error: 'Çevrimiçi değişiklik süresi sona ermiş. Lütfen WhatsApp üzerinden iletişime geçin.' }, { status: 409 });

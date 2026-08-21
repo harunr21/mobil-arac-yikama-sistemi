@@ -7,6 +7,9 @@ const whatsapp = 'https://wa.me/905555555555?text=Merhaba%2C%20mobil%20oto%20y%C
 
 export function SiteChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const analyticsRoute = pathname.startsWith('/randevu/yonet/')
+    ? '/randevu/yonet/[token]'
+    : pathname;
   const [menu, setMenu] = useState({ path: '', open: false });
   const open = menu.path === pathname && menu.open;
   useEffect(() => {
@@ -18,9 +21,9 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
   }, [open, pathname]);
   useEffect(() => {
     const events = pathname.startsWith('/randevu') && !pathname.startsWith('/randevu/yonet') ? ['page_view', 'booking_start'] : ['page_view'];
-    for (const event of events) void fetch('/api/analytics', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ event, route: pathname }), keepalive: true });
-  }, [pathname]);
-  const trackWhatsApp = () => { const body = JSON.stringify({ event: 'whatsapp_click', route: pathname }); navigator.sendBeacon?.('/api/analytics', new Blob([body], { type: 'application/json' })); };
+    for (const event of events) void fetch('/api/analytics', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ event, route: analyticsRoute }), keepalive: true });
+  }, [analyticsRoute, pathname]);
+  const trackWhatsApp = () => { const body = JSON.stringify({ event: 'whatsapp_click', route: analyticsRoute }); navigator.sendBeacon?.('/api/analytics', new Blob([body], { type: 'application/json' })); };
   if (pathname.startsWith('/admin')) return <>{children}</>;
 
   return (

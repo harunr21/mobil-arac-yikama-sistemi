@@ -4,8 +4,8 @@ import { env } from 'cloudflare:workers';
 import { requireChatGPTUser, type ChatGPTUser } from '@/app/chatgpt-auth';
 
 export class AdminAccessError extends Error {
-  constructor(public readonly email: string) {
-    super('Bu hesap yönetici izin listesinde değil.');
+  constructor(public readonly email: string, message = 'Bu hesap yönetici izin listesinde değil.') {
+    super(message);
     this.name = 'AdminAccessError';
   }
 }
@@ -26,6 +26,14 @@ function configuredEmails(): Set<string> {
 }
 
 export async function requireAdmin(returnTo = '/admin'): Promise<ChatGPTUser> {
+  const workerEnv = env as unknown as Record<string, unknown>;
+  if (workerEnv.ADMIN_AUTH_DISABLED === 'true') {
+    throw new AdminAccessError(
+      '',
+      'Yönetim paneli bu yayın adresinde devre dışı. Güvenli yönetici erişimi için Cloudflare Access kurulmalıdır.',
+    );
+  }
+
   const user = await requireChatGPTUser(returnTo);
   const normalizedEmail = user.email.trim().toLocaleLowerCase('tr-TR');
   const isLocalPreview =
@@ -37,4 +45,3 @@ export async function requireAdmin(returnTo = '/admin'): Promise<ChatGPTUser> {
 
   return user;
 }
-

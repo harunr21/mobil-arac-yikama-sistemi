@@ -11,6 +11,17 @@ const allowedEvents = new Set([
   'whatsapp_click',
 ]);
 
+const allowedRoutes = new Set([
+  '/',
+  '/hizmetler',
+  '/sss',
+  '/randevu',
+  '/randevu/yonet/[token]',
+  '/kvkk',
+  '/gizlilik',
+  '/kullanim-kosullari',
+]);
+
 export async function POST(request: Request) {
   const contentLength = Number(request.headers.get('content-length') ?? 0);
   if (contentLength > 2_048) return new Response(null, { status: 413 });
@@ -46,7 +57,11 @@ function normalizeRoute(value: unknown) {
   try {
     const parsed = new URL(value, 'https://site.local');
     if (parsed.origin !== 'https://site.local') return null;
-    return parsed.pathname.replace(/\/+/g, '/');
+    const pathname = parsed.pathname.replace(/\/+/g, '/');
+    if (/^\/randevu\/yonet\/[A-Za-z0-9_-]{43}$/.test(pathname)) {
+      return '/randevu/yonet/[token]';
+    }
+    return allowedRoutes.has(pathname) ? pathname : null;
   } catch {
     return null;
   }

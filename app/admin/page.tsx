@@ -20,8 +20,8 @@ export default async function AdminPage() {
         <p className={styles.eyebrow}>Yönetici erişimi</p>
         <h1 id="access-title">Bu hesap yetkili değil</h1>
         <p>
-          <strong>{error.email}</strong> adresi yönetici izin listesinde bulunmuyor.
-          İşletme sahibinden bu adresi <code>ADMIN_EMAILS</code> listesine eklemesini isteyin.
+          {error.email ? <><strong>{error.email}</strong> adresi yönetici izin listesinde bulunmuyor. </> : null}
+          {error.message}
         </p>
         <div className={styles.accessActions}>
           <Link className={styles.primaryButton} href="/">Siteye dön</Link>
