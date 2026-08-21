@@ -1,0 +1,31 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ankara-mobil-oto-yikama",
+  "main": "dist/server/index.js",
+  "compatibility_date": "2026-05-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "no_bundle": true,
+  "rules": [
+    {
+      "type": "ESModule",
+      "globs": ["**/*.js", "**/*.mjs"]
+    }
+  ],
+  "assets": {
+    "directory": "dist/client"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "ankara-mobil-oto-yikama-db",
+      "database_id": "7464fea2-79d7-4f18-9865-587d7893f214"
+    }
+  ],
+  "vars": {
+    "ADMIN_EMAILS": "yonodakakademi@gmail.com",
+    "NEXT_PUBLIC_SITE_URL": "https://ankara-mobil-oto-yikama.hrmertoglu.workers.dev"
+  },
+  "observability": {
+    "enabled": true
+  }
+}
